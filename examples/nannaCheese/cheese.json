@@ -1,0 +1,76 @@
+{
+  "base": {
+    "name": "nannaCheese",
+    "img": "base.png",
+    "scale": 8
+  },
+  "anchor": [
+    {
+      "key": "face",
+      "posX": 5,
+      "posY": 13
+    }
+  ],
+  "modify": [
+    {
+      "key": "face",
+      "steps": [
+        {
+          "type": "color",
+          "src": "FF0000",
+          "dst": "7F009E"
+        },
+        {
+          "type": "color",
+          "src": "00FF00",
+          "dst": "691742"
+        }
+      ]
+    }
+  ],
+  "output": [
+    {
+      "name": "",
+      "parts": [
+        {
+          "img": "../common/face.png",
+          "at": "face",
+          "mod": "face",
+          "posX": 0,
+          "posY": 0
+        }
+      ]
+    },
+    {
+      "name": "UWU",
+      "parts": [
+        {
+          "img": "../common/faceUwu.png",
+          "at": "face",
+          "mod": "face",
+          "posX": 0,
+          "posY": 0
+        }
+      ]
+    },
+    {
+      "name": "Peek",
+      "addX": 1,
+      "addY": 0,
+      "parts": [
+        {
+          "img": "../common/face.png",
+          "at": "face",
+          "mod": "face",
+          "posX": 0,
+          "posY": 0
+        },
+        {
+          "img": "wall.png",
+          "posX": -1,
+          "posY": 0
+        }
+      ]
+    }
+  ]
+}

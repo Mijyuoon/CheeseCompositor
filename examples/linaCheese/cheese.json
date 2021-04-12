@@ -1,0 +1,76 @@
+{
+  "base": {
+    "name": "linaCheese",
+    "img": "base.png",
+    "scale": 8
+  },
+  "anchor": [
+    {
+      "key": "face",
+      "posX": 6,
+      "posY": 12
+    }
+  ],
+  "modify": [
+    {
+      "key": "face",
+      "steps": [
+        {
+          "type": "color",
+          "src": "FF0000",
+          "dst": "870207"
+        },
+        {
+          "type": "color",
+          "src": "00FF00",
+          "dst": "702B2A"
+        }
+      ]
+    }
+  ],
+  "output": [
+    {
+      "name": "",
+      "parts": [
+        {
+          "img": "../common/face.png",
+          "at": "face",
+          "mod": "face",
+          "posX": 0,
+          "posY": 0
+        }
+      ]
+    },
+    {
+      "name": "UWU",
+      "parts": [
+        {
+          "img": "../common/faceUwu.png",
+          "at": "face",
+          "mod": "face",
+          "posX": 0,
+          "posY": 0
+        }
+      ]
+    },
+    {
+      "name": "Peek",
+      "addX": 0,
+      "addY": 0,
+      "parts": [
+        {
+          "img": "../common/face.png",
+          "at": "face",
+          "mod": "face",
+          "posX": 0,
+          "posY": 0
+        },
+        {
+          "img": "wall.png",
+          "posX": 0,
+          "posY": 0
+        }
+      ]
+    }
+  ]
+}
