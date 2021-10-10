@@ -1,6 +1,8 @@
 using System;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Processing;
+using CheeseCompositor.Config;
+using CheeseCompositor.Config.ModifySteps;
 
 namespace CheeseCompositor.Core
 {
@@ -13,16 +15,16 @@ namespace CheeseCompositor.Core
             this.context = context;
         }
 
-        public void ApplyModifyStep(Config.ModifyStep step)
+        public void ApplyModifyStep(ModifyStep step)
         {
             switch (step)
             {
-                case Config.ModifySteps.ModifyStepColor color: DoColorReplaceStep(color); break;
+                case ModifyStepColor color: DoColorReplaceStep(color); break;
                 default: throw new ArgumentException("unsupported modify step type");
             }
         }
 
-        private void DoColorReplaceStep(Config.ModifySteps.ModifyStepColor step)
+        private void DoColorReplaceStep(ModifyStepColor step)
         {
             const float MinTolerance = 0.005f;
 

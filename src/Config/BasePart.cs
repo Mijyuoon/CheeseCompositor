@@ -2,10 +2,10 @@ using Newtonsoft.Json;
 
 namespace CheeseCompositor.Config
 {
-    internal class Anchor
+    internal class BasePart
     {
-        [JsonProperty("key", Required = Required.Always)]
-        public string Key { get; set; }
+        [JsonProperty("img", Required = Required.Always)]
+        public string Image { get; set; }
 
         [JsonProperty("posX")]
         public int PositionX { get; set; }
@@ -13,7 +13,7 @@ namespace CheeseCompositor.Config
         [JsonProperty("posY")]
         public int PositionY { get; set; }
         
-        [JsonProperty("from")]
-        public string Parent { get; set; }
+        [JsonProperty("inScale")]
+        public int InputScale { get; set; } = 1;
     }
 }

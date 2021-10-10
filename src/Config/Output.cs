@@ -11,10 +11,13 @@ namespace CheeseCompositor.Config
         [JsonProperty("parts", Required = Required.Always)]
         public IEnumerable<OutputPart> Parts { get; set; }
 
-        [JsonProperty("addX")]
+        [JsonProperty("baseX")]
         public int BaseOffsetX { get; set; }
 
-        [JsonProperty("addY")]
+        [JsonProperty("baseY")]
         public int BaseOffsetY { get; set; }
+
+        [JsonProperty("baseMod")]
+        public string BaseModify { get; set; }
     }
 }

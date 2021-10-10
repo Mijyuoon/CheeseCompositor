@@ -1,15 +1,16 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
+using CheeseCompositor.Config;
 using CheeseCompositor.Core;
 
 namespace CheeseCompositor
 {
     internal class Program
     {
+        const string CommonDir = "../_common";
         const string ConfigName = "cheese.json";
         const string OutputExtPng = ".png";
 
@@ -22,25 +23,29 @@ namespace CheeseCompositor
             this.outputDir = outputDir;
         }
 
-        public async Task ExecuteAsync(string configName)
+        public void Execute(string configName)
         {
             var config = LoadCheeseConfig(configName);
-            var processor = new CheeseProcessor(this.sourceDir, config);
+
+            var assetPath = Path.GetFullPath(this.sourceDir);
+            var commonPath = Path.GetFullPath(Path.Combine(this.sourceDir, CommonDir));
+            
+            var processor = new CheeseProcessor(assetPath, commonPath, config);
 
             Directory.CreateDirectory(this.outputDir);
 
-            await foreach (var (name, image) in processor.ProcessAsync())
+            foreach (var (name, image) in processor.Process())
             {
-                await SaveImageAsPngAsync(name, image);
+                SaveImageAsPng(name, image);
             }
         }
 
-        private async Task SaveImageAsPngAsync(string name, Image image)
+        private void SaveImageAsPng(string name, Image image)
         {
             string fileName = Path.ChangeExtension(name, OutputExtPng);
             using var stream = new FileStream(Path.Combine(this.outputDir, fileName), FileMode.Create);
 
-            await image.SaveAsPngAsync(stream, new PngEncoder
+            image.SaveAsPng(stream, new PngEncoder
             {
                 BitDepth = PngBitDepth.Bit8,
                 ColorType = PngColorType.RgbWithAlpha,
@@ -48,13 +53,13 @@ namespace CheeseCompositor
             });
         }
 
-        private Config.Root LoadCheeseConfig(string configName)
+        private Root LoadCheeseConfig(string configName)
         {
             var configData = File.ReadAllText(Path.Combine(this.sourceDir, configName));
-            return JsonConvert.DeserializeObject<Config.Root>(configData);
+            return JsonConvert.DeserializeObject<Root>(configData);
         }
 
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             if (args.Length < 2)
             {
@@ -62,9 +67,10 @@ namespace CheeseCompositor
                 Environment.Exit(1);
             }
 
-            try {
+            try
+            {
                 var program = new Program(args[0], args[1]);
-                await program.ExecuteAsync(ConfigName);
+                program.Execute(ConfigName);
             }
             catch (Exception ex)
             {

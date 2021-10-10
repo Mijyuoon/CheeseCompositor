@@ -1,12 +1,14 @@
 {
-  "base": {
+  "props": {
     "name": "linaCheese",
-    "img": "base.png",
-    "scale": 8
+    "size": 27,
+    "inScale": 8,
+    "outScale": 4
   },
   "anchor": [
     {
       "key": "face",
+      "from": "_base",
       "posX": 6,
       "posY": 12
     }
@@ -28,12 +30,19 @@
       ]
     }
   ],
+  "base": [
+    {
+      "img": "base.png",
+      "posX": 0,
+      "posY": 0
+    }
+  ],
   "output": [
     {
       "name": "",
       "parts": [
         {
-          "img": "../common/face.png",
+          "img": "@face.png",
           "at": "face",
           "mod": "face",
           "posX": 0,
@@ -45,7 +54,7 @@
       "name": "UWU",
       "parts": [
         {
-          "img": "../common/faceUwu.png",
+          "img": "@faceUwu.png",
           "at": "face",
           "mod": "face",
           "posX": 0,
@@ -55,11 +64,9 @@
     },
     {
       "name": "Peek",
-      "addX": 0,
-      "addY": 0,
       "parts": [
         {
-          "img": "../common/face.png",
+          "img": "@face.png",
           "at": "face",
           "mod": "face",
           "posX": 0,

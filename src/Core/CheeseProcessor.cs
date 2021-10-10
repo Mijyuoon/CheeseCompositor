@@ -1,75 +1,114 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
+using CheeseCompositor.Config;
 
 namespace CheeseCompositor.Core
 {
     internal class CheeseProcessor
     {
+        const string CommonPathPrefix = "@";
+        const string BaseAnchorKey = "_base";
+        
         private string assetPath;
-        private Config.Root config;
+        private string commonPath;
+        private Root config;
 
-        private IReadOnlyDictionary<string, Config.Anchor> anchors;
-        private IReadOnlyDictionary<string, Config.Modify> modifies;
+        private IReadOnlyDictionary<string, Anchor> anchors;
+        private IReadOnlyDictionary<string, Modify> modifies;
 
-        public CheeseProcessor(string assetPath, Config.Root config)
+        public CheeseProcessor(string assetPath, string commonPath, Root config)
         {
             this.assetPath = assetPath;
+            this.commonPath = commonPath;
             this.config = config;
 
             this.anchors = config.Anchors.ToDictionary(k => k.Key);
             this.modifies = config.Modifies.ToDictionary(k => k.Key);
         }
 
-        public async IAsyncEnumerable<(string, Image)> ProcessAsync()
+        public IEnumerable<(string, Image)> Process()
         {
-            using var baseImage = await LoadImageAsync<Rgba32>(this.config.Base.Image);
-
             foreach (var output in this.config.Outputs)
             {
-                var cheeseName = this.config.Base.Name + output.Name;
-                var cheeseImage = new Image<Rgba32>(baseImage.Width, baseImage.Height, Color.Transparent);
-
-                cheeseImage.Mutate(async context => {
-                    DrawImageAtOffset(context, baseImage, output.BaseOffsetX, output.BaseOffsetY);
-
-                    foreach (var part in output.Parts)
+                var cheeseName = this.config.Props.Name + output.Name;
+                var cheeseImage = new Image<Rgba32>(config.Props.Size, config.Props.Size, Color.Transparent);
+                
+                var baseParts = this.config.BaseParts
+                    .Select(part => new OutputPart
                     {
-                        using var partImage = await LoadImageAsync<Rgba32>(part.Image);
+                        Image = part.Image,
+                        PositionX = part.PositionX,
+                        PositionY = part.PositionY,
+                        Modify = output.BaseModify,
+                        Anchor = BaseAnchorKey,
+                        Order = 0,
+                    });
 
-                        if (this.modifies.TryGetValue(part.Modify ?? "", out var modify))
+                var parts = baseParts
+                    .Concat(output.Parts)
+                    .OrderBy(p => p.Order);
+                
+                cheeseImage.Mutate(cheeseCtx =>
+                {
+                    foreach (var part in parts)
+                    {
+                        using var partImage = LoadImage<Rgba32>(part.Image);
+                        var (offsetX, offsetY) = ResolveAnchor(part.Anchor ?? "", output);
+                    
+                        partImage.Mutate(partCtx =>
                         {
-                            partImage.Mutate(context => {
-                                ApplyImageModifier(context, modify);
-                            });
-                        }
-
-                        int offsetX = output.BaseOffsetX + part.PositionX;
-                        int offsetY = output.BaseOffsetY + part.PositionY;
-
-                        if (this.anchors.TryGetValue(part.Anchor ?? "", out var anchor))
-                        {
-                            offsetX += anchor.PositionX;
-                            offsetY += anchor.PositionY;
-                        }
-
-                        DrawImageAtOffset(context, partImage, offsetX, offsetY);
+                            var inScale = part.InputScale > 0 ? part.InputScale : config.Props.InputScale;
+                        
+                            ApplyImageRescale(partCtx, inScale: inScale);
+                        
+                            if (this.modifies.TryGetValue(part.Modify ?? "", out var modify))
+                            {
+                                ApplyImageModifier(partCtx, modify);
+                            }
+                        });
+                        
+                        DrawImageAtOffset(cheeseCtx, partImage, offsetX, offsetY);
                     }
+                    
+                    ApplyImageRescale(cheeseCtx, outScale: config.Props.OutputScale);
                 });
 
                 yield return (cheeseName, cheeseImage);
             }
         }
 
+        private (int, int) ResolveAnchor(string key, Output output)
+        {
+            var (offsetX, offsetY) = (0, 0);
+
+            while (key is not null)
+            {
+                if (key == BaseAnchorKey)
+                {
+                    offsetX += output.BaseOffsetX;
+                    offsetY += output.BaseOffsetY;
+                    break;
+                }
+
+                var anchor = this.anchors.GetValueOrDefault(key);
+
+                offsetX += anchor?.PositionX ?? 0;
+                offsetY += anchor?.PositionY ?? 0;
+                key = anchor?.Parent;
+            }
+            
+            return (offsetX, offsetY);
+        }
+
         private void DrawImageAtOffset(IImageProcessingContext context, Image image, int offsetX, int offsetY)
         {
-            var offset = new Point(offsetX, offsetY) * Math.Max(1, this.config.Base.Scale);
-
+            var offset = new Point(offsetX, offsetY);
+            
             context.DrawImage(image, offset, new GraphicsOptions
             {
                 ColorBlendingMode = PixelColorBlendingMode.Normal,
@@ -78,7 +117,26 @@ namespace CheeseCompositor.Core
             });
         }
 
-        private void ApplyImageModifier(IImageProcessingContext context, Config.Modify modify)
+        private void ApplyImageRescale(IImageProcessingContext context, int inScale = 1, int outScale = 1)
+        {
+            if (outScale > 1)
+            {
+                var currentSize = context.GetCurrentSize();
+                var resampler = new NearestNeighborResampler();
+                
+                context.Resize(currentSize.Width * outScale, currentSize.Height * outScale, resampler);
+            }
+
+            if (inScale > 1)
+            {
+                var currentSize = context.GetCurrentSize();
+                var resampler = new NearestNeighborResampler();
+                
+                context.Resize(currentSize.Width / inScale, currentSize.Height / inScale, resampler);
+            }
+        }
+
+        private void ApplyImageModifier(IImageProcessingContext context, Modify modify)
         {
             var modifier = new ImageModifier(context);
 
@@ -88,11 +146,15 @@ namespace CheeseCompositor.Core
             }
         }
 
-        private async Task<Image<T>> LoadImageAsync<T>(string fileName) where T : unmanaged, IPixel<T>
+        private Image<T> LoadImage<T>(string fileName) where T : unmanaged, IPixel<T>
         {
-            using var stream = new FileStream(Path.Combine(this.assetPath, fileName), FileMode.Open);
+            var imagePath = fileName.StartsWith(CommonPathPrefix)
+                ? Path.Combine(this.commonPath, fileName[CommonPathPrefix.Length..])
+                : Path.Combine(this.assetPath, fileName);
 
-            return await Image.LoadAsync<T>(stream);
+            using var stream = new FileStream(imagePath, FileMode.Open);
+            
+            return Image.Load<T>(stream);
         }
     }
 }
