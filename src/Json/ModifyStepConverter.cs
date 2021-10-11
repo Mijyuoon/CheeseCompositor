@@ -28,6 +28,7 @@ namespace CheeseCompositor.Json
         private ModifyStep GetModifyByType(string type) => type switch {
             "color" => new ModifyStepColor(),
             "rotate" => new ModifyStepRotate(),
+            "opacity" => new ModifyStepOpacity(),
             _ => new ModifyStep(),
         };
     }
