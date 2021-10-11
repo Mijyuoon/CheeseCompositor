@@ -4,7 +4,7 @@ using CheeseCompositor.Json;
 namespace CheeseCompositor.Config
 {
     [JsonConverter(typeof(ModifyStepConverter))]
-    internal abstract class ModifyStep
+    internal class ModifyStep
     {
         public const string TypeKeyName = "type";
         

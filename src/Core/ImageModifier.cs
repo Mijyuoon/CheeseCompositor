@@ -6,13 +6,19 @@ using CheeseCompositor.Config.ModifySteps;
 
 namespace CheeseCompositor.Core
 {
+    internal delegate void DerivedImageModifierFunc(IImageProcessingContext context, string key);
+    
     internal class ImageModifier
     {
+        const string DerivedStepPrefix = "_";
+        
         private IImageProcessingContext context;
+        private DerivedImageModifierFunc deriveFunc;
 
-        public ImageModifier(IImageProcessingContext context)
+        public ImageModifier(IImageProcessingContext context, DerivedImageModifierFunc deriveFunc = default)
         {
             this.context = context;
+            this.deriveFunc = deriveFunc;
         }
 
         public void ApplyModifyStep(ModifyStep step)
@@ -21,6 +27,7 @@ namespace CheeseCompositor.Core
             {
                 case ModifyStepColor color: DoColorReplaceStep(color); break;
                 case ModifyStepRotate rotate: DoImageRotateStep(rotate); break;
+                case var modify when IsDerivedStep(modify): DoDerivedStep(modify); break;
                 default: throw new ArgumentException($"unsupported modify step type: {step.Type}");
             }
         }
@@ -47,5 +54,12 @@ namespace CheeseCompositor.Core
 
             this.context.RotateFlip(rotate, flip);
         }
+
+        private void DoDerivedStep(ModifyStep step)
+        {
+            this.deriveFunc?.Invoke(this.context, step.Type[DerivedStepPrefix.Length..]);
+        }
+
+        private static bool IsDerivedStep(ModifyStep step) => step.Type.StartsWith(DerivedStepPrefix);
     }
 }

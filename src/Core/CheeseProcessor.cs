@@ -137,7 +137,7 @@ namespace CheeseCompositor.Core
         {
             if (this.modifies.TryGetValue(key ?? "", out var modify))
             {
-                var modifier = new ImageModifier(context);
+                var modifier = new ImageModifier(context, this.ApplyImageModifier);
 
                 foreach (var step in modify.Steps)
                 {

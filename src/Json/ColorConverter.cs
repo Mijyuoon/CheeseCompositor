@@ -18,7 +18,7 @@ namespace CheeseCompositor.Json
                 return color;
             }
 
-            throw new JsonSerializationException($"invalid color value '{jsonValue}' specified");
+            throw new JsonSerializationException($"invalid color value: {jsonValue}");
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

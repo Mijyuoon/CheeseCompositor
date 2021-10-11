@@ -28,7 +28,7 @@ namespace CheeseCompositor.Json
         private ModifyStep GetModifyByType(string type) => type switch {
             "color" => new ModifyStepColor(),
             "rotate" => new ModifyStepRotate(),
-            _ => throw new JsonSerializationException($"invalid modify type '{type}' specified"),
+            _ => new ModifyStep(),
         };
     }
 }
