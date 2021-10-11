@@ -8,15 +8,13 @@ namespace CheeseCompositor.Json
 {
     internal class ModifyStepConverter : JsonConverter
     {
-        const string TypeKeyName = "type";
-
         public override bool CanConvert(Type objectType) => typeof(ModifyStep).IsAssignableFrom(objectType);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var jsonObject = JObject.Load(reader);
 
-            var modify = GetModifyByType((string)jsonObject[TypeKeyName]);
+            var modify = GetModifyByType((string)jsonObject[ModifyStep.TypeKeyName]);
             serializer.Populate(jsonObject.CreateReader(), modify);
 
             return modify;
@@ -29,6 +27,7 @@ namespace CheeseCompositor.Json
 
         private ModifyStep GetModifyByType(string type) => type switch {
             "color" => new ModifyStepColor(),
+            "rotate" => new ModifyStepRotate(),
             _ => throw new JsonSerializationException($"invalid modify type '{type}' specified"),
         };
     }

@@ -63,18 +63,15 @@ namespace CheeseCompositor.Core
                         partImage.Mutate(partCtx =>
                         {
                             var inScale = part.InputScale > 0 ? part.InputScale : config.Props.InputScale;
-                        
+                            
                             ApplyImageRescale(partCtx, inScale: inScale);
-                        
-                            if (this.modifies.TryGetValue(part.Modify ?? "", out var modify))
-                            {
-                                ApplyImageModifier(partCtx, modify);
-                            }
+                            ApplyImageModifier(partCtx, part.Modify);
                         });
                         
                         DrawImageAtOffset(cheeseCtx, partImage, offsetX, offsetY);
                     }
                     
+                    ApplyImageModifier(cheeseCtx, output.OutputModify);
                     ApplyImageRescale(cheeseCtx, outScale: config.Props.OutputScale);
                 });
 
@@ -136,13 +133,16 @@ namespace CheeseCompositor.Core
             }
         }
 
-        private void ApplyImageModifier(IImageProcessingContext context, Modify modify)
+        private void ApplyImageModifier(IImageProcessingContext context, string key)
         {
-            var modifier = new ImageModifier(context);
-
-            foreach (var step in modify.Steps)
+            if (this.modifies.TryGetValue(key ?? "", out var modify))
             {
-                modifier.ApplyModifyStep(step);
+                var modifier = new ImageModifier(context);
+
+                foreach (var step in modify.Steps)
+                {
+                    modifier.ApplyModifyStep(step);
+                }          
             }
         }
 

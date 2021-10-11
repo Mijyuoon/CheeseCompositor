@@ -19,5 +19,8 @@ namespace CheeseCompositor.Config
 
         [JsonProperty("baseMod")]
         public string BaseModify { get; set; }
+        
+        [JsonProperty("outMod")]
+        public string OutputModify { get; set; }
     }
 }

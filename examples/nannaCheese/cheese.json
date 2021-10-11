@@ -28,6 +28,15 @@
           "dst": "691742"
         }
       ]
+    },
+    {
+      "key": "flippy",
+      "steps": [
+        {
+          "type": "rotate",
+          "mode": "hflip"
+        }
+      ]
     }
   ],
   "base": [
@@ -76,6 +85,21 @@
         },
         {
           "img": "wall.png",
+          "posX": 0,
+          "posY": 0
+        }
+      ]
+    },
+    {
+      "name": "Flip",
+      "baseX": 1,
+      "baseY": 0,
+      "outMod": "flippy",
+      "parts": [
+        {
+          "img": "@face.png",
+          "at": "face",
+          "mod": "face",
           "posX": 0,
           "posY": 0
         }
