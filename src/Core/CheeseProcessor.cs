@@ -13,7 +13,7 @@ namespace CheeseCompositor.Core
     {
         const string CommonPathPrefix = "@";
         const string BaseAnchorKey = "_base";
-        
+
         private string assetPath;
         private string commonPath;
         private Root config;
@@ -37,7 +37,7 @@ namespace CheeseCompositor.Core
             {
                 var cheeseName = this.config.Props.Name + output.Name;
                 var cheeseImage = new Image<Rgba32>(config.Props.Size, config.Props.Size, Color.Transparent);
-                
+
                 var baseParts = this.config.BaseParts
                     .Select(part => new OutputPart
                     {
@@ -53,25 +53,25 @@ namespace CheeseCompositor.Core
                 var parts = baseParts
                     .Concat(output.Parts)
                     .OrderBy(p => p.Order);
-                
+
                 cheeseImage.Mutate(cheeseCtx =>
                 {
                     foreach (var part in parts)
                     {
                         using var partImage = LoadImage<Rgba32>(part.Image);
                         var (offsetX, offsetY) = ResolveAnchor(part.Anchor ?? "", output);
-                    
+
                         partImage.Mutate(partCtx =>
                         {
                             var inScale = part.InputScale > 0 ? part.InputScale : config.Props.InputScale;
-                            
+
                             ApplyImageRescale(partCtx, inScale: inScale);
                             ApplyImageModifier(partCtx, part.Modify);
                         });
-                        
+
                         DrawImageAtOffset(cheeseCtx, partImage, offsetX, offsetY);
                     }
-                    
+
                     ApplyImageModifier(cheeseCtx, output.OutputModify);
                     ApplyImageRescale(cheeseCtx, outScale: config.Props.OutputScale);
                 });
@@ -99,14 +99,14 @@ namespace CheeseCompositor.Core
                 offsetY += anchor?.PositionY ?? 0;
                 key = anchor?.Parent;
             }
-            
+
             return (offsetX, offsetY);
         }
 
         private void DrawImageAtOffset(IImageProcessingContext context, Image image, int offsetX, int offsetY)
         {
             var offset = new Point(offsetX, offsetY);
-            
+
             context.DrawImage(image, offset, new GraphicsOptions
             {
                 ColorBlendingMode = PixelColorBlendingMode.Normal,
@@ -121,7 +121,7 @@ namespace CheeseCompositor.Core
             {
                 var currentSize = context.GetCurrentSize();
                 var resampler = new NearestNeighborResampler();
-                
+
                 context.Resize(currentSize.Width * outScale, currentSize.Height * outScale, resampler);
             }
 
@@ -129,7 +129,7 @@ namespace CheeseCompositor.Core
             {
                 var currentSize = context.GetCurrentSize();
                 var resampler = new NearestNeighborResampler();
-                
+
                 context.Resize(currentSize.Width / inScale, currentSize.Height / inScale, resampler);
             }
         }
@@ -143,7 +143,7 @@ namespace CheeseCompositor.Core
                 foreach (var step in modify.Steps)
                 {
                     modifier.ApplyModifyStep(step);
-                }          
+                }
             }
         }
 
@@ -154,7 +154,7 @@ namespace CheeseCompositor.Core
                 : Path.Combine(this.assetPath, fileName);
 
             using var stream = new FileStream(imagePath, FileMode.Open);
-            
+
             return Image.Load<T>(stream);
         }
     }

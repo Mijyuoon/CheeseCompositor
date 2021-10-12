@@ -6,7 +6,7 @@ namespace CheeseCompositor.Config
     {
         [JsonProperty("name", Required = Required.Always)]
         public string Name { get; set; }
-        
+
         [JsonProperty("size", Required = Required.Always)]
         public int Size { get; set; }
 

@@ -7,7 +7,7 @@ namespace CheeseCompositor.Config
     internal class ModifyStep
     {
         public const string TypeKeyName = "type";
-        
+
         [JsonProperty(TypeKeyName)]
         public string Type { get; set; }
     }

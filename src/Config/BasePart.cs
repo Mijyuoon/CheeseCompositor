@@ -12,7 +12,7 @@ namespace CheeseCompositor.Config
 
         [JsonProperty("posY")]
         public int PositionY { get; set; }
-        
+
         [JsonProperty("inScale")]
         public int InputScale { get; set; }
     }

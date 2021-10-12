@@ -7,11 +7,11 @@ using CheeseCompositor.Config.ModifySteps;
 namespace CheeseCompositor.Core
 {
     internal delegate void DerivedImageModifierFunc(IImageProcessingContext context, string key);
-    
+
     internal class ImageModifier
     {
         const string DerivedStepPrefix = "_";
-        
+
         private IImageProcessingContext context;
         private DerivedImageModifierFunc deriveFunc;
 
@@ -37,7 +37,7 @@ namespace CheeseCompositor.Core
         {
             var threshold = Math.Max(0.005f, step.Tolerance);
             var brush = new RecolorBrush(step.Source, step.Target, threshold);
-            
+
             this.context.Fill(brush);
         }
 

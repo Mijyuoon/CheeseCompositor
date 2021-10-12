@@ -10,20 +10,20 @@ namespace CheeseCompositor.Config.ModifySteps
     {
         [EnumMember(Value = "left")]
         RotateLeft,
-        
+
         [EnumMember(Value = "right")]
         RotateRight,
-        
+
         [EnumMember(Value = "180")]
         Rotate180,
-        
+
         [EnumMember(Value = "hflip")]
         FlipHorizontal,
-        
+
         [EnumMember(Value = "vflip")]
         FlipVertical,
     }
-    
+
     internal class ModifyStepRotate : ModifyStep
     {
         [JsonProperty("mode")]

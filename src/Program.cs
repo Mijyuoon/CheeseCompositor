@@ -29,7 +29,7 @@ namespace CheeseCompositor
 
             var assetPath = Path.GetFullPath(this.sourceDir);
             var commonPath = Path.GetFullPath(Path.Combine(this.sourceDir, CommonDir));
-            
+
             var processor = new CheeseProcessor(assetPath, commonPath, config);
 
             Directory.CreateDirectory(this.outputDir);
