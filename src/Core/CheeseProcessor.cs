@@ -45,6 +45,7 @@ namespace CheeseCompositor.Core
                         PositionX = part.PositionX,
                         PositionY = part.PositionY,
                         Modify = output.BaseModify,
+                        InputScale = part.InputScale,
                         Anchor = BaseAnchorKey,
                         Order = 0,
                     });
