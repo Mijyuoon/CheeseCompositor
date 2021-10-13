@@ -61,6 +61,9 @@ namespace CheeseCompositor.Core
                         using var partImage = LoadImage<Rgba32>(part.Image);
                         var (offsetX, offsetY) = ResolveAnchor(part.Anchor ?? "", output);
 
+                        offsetX += part.PositionX;
+                        offsetY += part.PositionY;
+
                         partImage.Mutate(partCtx =>
                         {
                             var inScale = part.InputScale > 0 ? part.InputScale : config.Props.InputScale;
