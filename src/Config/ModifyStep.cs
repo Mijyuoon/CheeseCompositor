@@ -8,7 +8,7 @@ namespace CheeseCompositor.Config
     {
         public const string TypeKeyName = "type";
 
-        [JsonProperty(TypeKeyName)]
+        [JsonProperty(TypeKeyName, Required = Required.Always)]
         public string Type { get; set; }
     }
 }

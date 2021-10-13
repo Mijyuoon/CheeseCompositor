@@ -37,6 +37,15 @@
           "mode": "hflip"
         }
       ]
+    },
+    {
+      "key": "dead",
+      "steps": [
+        {
+          "type": "filter",
+          "mode": "gray"
+        }
+      ]
     }
   ],
   "base": [
@@ -98,6 +107,19 @@
       "parts": [
         {
           "img": "@face.png",
+          "at": "face",
+          "mod": "face",
+          "posX": 0,
+          "posY": 0
+        }
+      ]
+    },
+    {
+      "name": "Dead",
+      "outMod": "dead",
+      "parts": [
+        {
+          "img": "@faceDead.png",
           "at": "face",
           "mod": "face",
           "posX": 0,

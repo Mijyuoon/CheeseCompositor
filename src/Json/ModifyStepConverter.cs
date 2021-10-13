@@ -29,6 +29,7 @@ namespace CheeseCompositor.Json
             "color" => new ModifyStepColor(),
             "rotate" => new ModifyStepRotate(),
             "opacity" => new ModifyStepOpacity(),
+            "filter" => new ModifyStepFilter(),
             _ => new ModifyStep(),
         };
     }

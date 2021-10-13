@@ -1,5 +1,4 @@
 ﻿using System.Runtime.Serialization;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -26,7 +25,7 @@ namespace CheeseCompositor.Config.ModifySteps
 
     internal class ModifyStepRotate : ModifyStep
     {
-        [JsonProperty("mode")]
+        [JsonProperty("mode", Required = Required.Always)]
         public ModifyRotateMode RotateMode { get; set; }
     }
 }

@@ -28,6 +28,7 @@ namespace CheeseCompositor.Core
                 case ModifyStepColor color: DoColorReplaceStep(color); break;
                 case ModifyStepRotate rotate: DoImageRotateStep(rotate); break;
                 case ModifyStepOpacity opacity: DoImageOpacityStep(opacity); break;
+                case ModifyStepFilter filter: DoImageFilterStep(filter); break;
                 case var modify when IsDerivedStep(modify): DoDerivedStep(modify); break;
                 default: throw new ArgumentException($"unsupported modify step type: {step.Type}");
             }
@@ -61,6 +62,18 @@ namespace CheeseCompositor.Core
             var value = Math.Clamp(step.Value, 0f, 1f);
 
             this.context.Opacity(value);
+        }
+
+        private void DoImageFilterStep(ModifyStepFilter step)
+        {
+            switch (step.FilterMode)
+            {
+                case ModifyFilterMode.Grayscale:
+                    this.context.Grayscale(GrayscaleMode.Bt709);
+                    break;
+
+                default: throw new ArgumentException($"unsupported filter mode: {step.FilterMode}");
+            }
         }
 
         private void DoDerivedStep(ModifyStep step)
